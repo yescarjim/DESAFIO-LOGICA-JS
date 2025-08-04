@@ -31,6 +31,7 @@ Operadores de comparación: <, >=, ===
 Estructuras de control: if/else if/else
 Funciones de salida: alert()</p>
 
+<img src="C:\Users\yeskar\Desktop\CURSO 202506\MODULO 1\DESAFIO TECNICO 3\desafio logica js\Reto 1\images\DIAGRAMA DE FLUJO.svg" alt="Diagrama de flujo">
 
 <footer>
 <ul>Contacto
