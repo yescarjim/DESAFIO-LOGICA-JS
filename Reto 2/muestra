@@ -1,0 +1,309 @@
+/**
+ * 🏧 CAJERO AUTOMÁTICO
+ * Simulador completo de cajero automático con JavaScript
+ */
+
+// ===== CONFIGURACIÓN INICIAL =====
+const PIN_CORRECTO = "1234";
+const SALDO_INICIAL = 100000;
+const INTENTOS_MAXIMOS = 3;
+
+// ===== VARIABLES GLOBALES =====
+let saldoActual = SALDO_INICIAL;
+let intentosFallidos = 0;
+let sistemaActivo = true;
+
+// ===== FUNCIÓN PRINCIPAL =====
+function iniciarCajero() {
+    console.log("🏧 ===== BIENVENIDO AL CAJERO AUTOMÁTICO =====");
+    console.log("💳 Inserte su tarjeta para comenzar...");
+    console.log("");
+    
+    // Reiniciar variables por si es un nuevo inicio
+    saldoActual = SALDO_INICIAL;
+    intentosFallidos = 0;
+    sistemaActivo = true;
+    
+    // Iniciar proceso de autenticación
+    autenticarUsuario();
+}
+
+// ===== MÓDULO 1: AUTENTICACIÓN =====
+function autenticarUsuario() {
+    console.log("🔐 AUTENTICACIÓN REQUERIDA");
+    console.log(`ℹ️  Para esta simulación, el PIN correcto es: ${PIN_CORRECTO}`);
+    console.log("");
+    
+    while (sistemaActivo && intentosFallidos < INTENTOS_MAXIMOS) {
+        // Solicitar PIN al usuario
+        let pinIngresado = prompt("🔑 Ingrese su PIN de 4 dígitos:\n\n💡 PIN de prueba: 1234");
+        
+        // Verificar si el usuario canceló
+        if (pinIngresado === null) {
+            console.log("❌ Operación cancelada por el usuario");
+            cerrarSistema();
+            return;
+        }
+        
+        // Validar PIN
+        if (pinIngresado === PIN_CORRECTO) {
+            console.log("✅ PIN CORRECTO - Acceso autorizado");
+            console.log("🎉 ¡Bienvenido al sistema!");
+            console.log("");
+            
+            // Ir al menú principal
+            mostrarMenuPrincipal();
+            return;
+        } else {
+            intentosFallidos++;
+            let intentosRestantes = INTENTOS_MAXIMOS - intentosFallidos;
+            
+            console.log(`❌ PIN INCORRECTO`);
+            console.log(`⚠️  Intentos restantes: ${intentosRestantes}`);
+            
+            if (intentosRestantes > 0) {
+                alert(`❌ PIN INCORRECTO\n\nTe quedan ${intentosRestantes} intentos.`);
+            }
+        }
+    }
+    
+    // Si llegamos aquí, se agotaron los intentos
+    if (intentosFallidos >= INTENTOS_MAXIMOS) {
+        console.log("🚫 TARJETA BLOQUEADA");
+        console.log("❌ Demasiados intentos fallidos");
+        console.log("📞 Contacte a su banco para desbloquear su tarjeta");
+        alert("🚫 TARJETA BLOQUEADA\n\n❌ Demasiados intentos fallidos\n📞 Contacte a su banco para desbloquear");
+        cerrarSistema();
+    }
+}
+
+// ===== MÓDULO 2: MENÚ PRINCIPAL =====
+function mostrarMenuPrincipal() {
+    let continuar = true;
+    
+    while (continuar && sistemaActivo) {
+        console.log("📋 ===== MENÚ PRINCIPAL =====");
+        console.log("1️⃣  Ver saldo actual");
+        console.log("2️⃣  Retirar dinero");
+        console.log("3️⃣  Salir del sistema");
+        console.log("============================");
+        
+        let opcion = prompt(`📋 MENÚ PRINCIPAL
+
+1️⃣ Ver saldo actual
+2️⃣ Retirar dinero  
+3️⃣ Salir del sistema
+
+Seleccione una opción (1-3):`);
+        
+        // Verificar si el usuario canceló
+        if (opcion === null) {
+            console.log("❌ Operación cancelada");
+            cerrarSistema();
+            return;
+        }
+        
+        // Procesar opción seleccionada
+        switch (opcion) {
+            case "1":
+                verSaldo();
+                break;
+            case "2":
+                retirarDinero();
+                break;
+            case "3":
+                cerrarSistema();
+                continuar = false;
+                break;
+            default:
+                console.log("❌ Opción inválida. Por favor seleccione 1, 2 o 3");
+                alert("❌ Opción inválida\n\nPor favor seleccione números del 1 al 3");
+        }
+    }
+}
+
+// ===== MÓDULO 3: VER SALDO =====
+function verSaldo() {
+    console.log("💰 ===== CONSULTA DE SALDO =====");
+    console.log(`💵 Su saldo actual es: $${saldoActual.toLocaleString()}`);
+    console.log("================================");
+    
+    // Mostrar también en alert para mejor visualización
+    alert(`💰 CONSULTA DE SALDO
+
+💵 Su saldo actual es:
+$${saldoActual.toLocaleString()}`);
+    
+    // Preguntar si desea continuar
+    let continuar = confirm("¿Desea realizar otra operación?");
+    if (!continuar) {
+        cerrarSistema();
+    }
+}
+
+// ===== MÓDULO 4: RETIRAR DINERO =====
+function retirarDinero() {
+    console.log("💸 ===== RETIRO DE DINERO =====");
+    console.log(`💰 Saldo disponible: $${saldoActual.toLocaleString()}`);
+    
+    let monto = prompt(`💸 RETIRO DE DINERO
+
+💰 Saldo disponible: $${saldoActual.toLocaleString()}
+
+💵 Ingrese el monto a retirar:`);
+    
+    // Verificar si el usuario canceló
+    if (monto === null) {
+        console.log("❌ Retiro cancelado");
+        return;
+    }
+    
+    // Convertir a número y validar
+    monto = parseFloat(monto);
+    
+    // Validación 1: Verificar que sea un número válido
+    if (isNaN(monto)) {
+        console.log("❌ ERROR: Debe ingresar un número válido");
+        alert("❌ ERROR\n\nDebe ingresar un monto numérico válido");
+        return;
+    }
+    
+    // Validación 2: Verificar que sea mayor a 0
+    if (monto <= 0) {
+        console.log("❌ ERROR: El monto debe ser mayor a $0");
+        alert("❌ ERROR\n\nEl monto debe ser mayor a $0");
+        return;
+    }
+    
+    // Validación 3: Verificar fondos suficientes
+    if (monto > saldoActual) {
+        console.log("❌ FONDOS INSUFICIENTES");
+        console.log(`💰 Su saldo actual: $${saldoActual.toLocaleString()}`);
+        console.log(`💸 Monto solicitado: $${monto.toLocaleString()}`);
+        console.log(`❌ Faltante: $${(monto - saldoActual).toLocaleString()}`);
+        
+        alert(`❌ FONDOS INSUFICIENTES
+
+💰 Su saldo: $${saldoActual.toLocaleString()}
+💸 Monto solicitado: $${monto.toLocaleString()}
+❌ Faltante: $${(monto - saldoActual).toLocaleString()}`);
+        
+        // Preguntar si quiere intentar con otro monto
+        let intentarOtroMonto = confirm("¿Desea intentar con otro monto?");
+        if (intentarOtroMonto) {
+            retirarDinero(); // Llamada recursiva
+        }
+        return;
+    }
+    
+    // Si llegamos aquí, el retiro es válido
+    procesarRetiro(monto);
+}
+
+// ===== FUNCIÓN AUXILIAR: PROCESAR RETIRO =====
+function procesarRetiro(monto) {
+    let saldoAnterior = saldoActual;
+    
+    console.log("⏳ Procesando retiro...");
+    
+    // Actualizar saldo inmediatamente
+    saldoActual = saldoActual - monto;
+    
+    // Generar comprobante
+    generarComprobante(monto, saldoAnterior, saldoActual);
+    
+    // Preguntar si desea continuar
+    let continuar = confirm("¿Desea realizar otra operación?");
+    if (!continuar) {
+        cerrarSistema();
+    }
+}
+
+// ===== FUNCIÓN AUXILIAR: GENERAR COMPROBANTE =====
+function generarComprobante(montoRetirado, saldoAnterior, nuevoSaldo) {
+    let fecha = new Date();
+    let fechaFormateada = fecha.toLocaleDateString('es-ES');
+    let horaFormateada = fecha.toLocaleTimeString('es-ES');
+    
+    console.log("✅ ===== TRANSACCIÓN EXITOSA =====");
+    console.log("🎫 ===== COMPROBANTE DE RETIRO =====");
+    console.log(`📅 Fecha: ${fechaFormateada}`);
+    console.log(`🕐 Hora: ${horaFormateada}`);
+    console.log(`💸 Monto retirado: $${montoRetirado.toLocaleString()}`);
+    console.log(`💰 Saldo anterior: $${saldoAnterior.toLocaleString()}`);
+    console.log(`💵 Nuevo saldo: $${nuevoSaldo.toLocaleString()}`);
+    console.log("===================================");
+    console.log("💵 Retire su dinero de la bandeja");
+    console.log("===================================");
+    
+    // Mostrar también en alert
+    alert(`✅ TRANSACCIÓN EXITOSA
+
+🎫 COMPROBANTE DE RETIRO
+================================
+📅 Fecha: ${fechaFormateada}
+🕐 Hora: ${horaFormateada}
+💸 Retirado: $${montoRetirado.toLocaleString()}
+💰 Saldo anterior: $${saldoAnterior.toLocaleString()}
+💵 Nuevo saldo: $${nuevoSaldo.toLocaleString()}
+================================
+💵 Retire su dinero de la bandeja`);
+}
+
+// ===== MÓDULO 5: CERRAR SISTEMA =====
+function cerrarSistema() {
+    sistemaActivo = false;
+    
+    console.log("👋 ===== CERRANDO SESIÓN =====");
+    console.log("✅ Transacción completada");
+    console.log("💳 Retire su tarjeta");
+    console.log("🙏 Gracias por usar nuestro cajero automático");
+    console.log("😊 ¡Que tenga un excelente día!");
+    console.log("==============================");
+    
+    alert(`👋 SESIÓN CERRADA
+
+✅ Operaciones completadas
+💳 Retire su tarjeta
+🙏 Gracias por usar nuestro servicio
+
+😊 ¡Que tenga un excelente día!`);
+}
+
+// ===== FUNCIONES DE UTILIDAD =====
+
+// Función para reiniciar el sistema (útil para pruebas)
+function reiniciarCajero() {
+    saldoActual = SALDO_INICIAL;
+    intentosFallidos = 0;
+    sistemaActivo = true;
+    
+    console.clear();
+    console.log("🔄 Sistema reiniciado");
+    iniciarCajero();
+}
+
+// Función para mostrar estado del sistema (útil para debugging)
+function mostrarEstadoSistema() {
+    console.log("📊 ===== ESTADO DEL SISTEMA =====");
+    console.log(`💰 Saldo actual: $${saldoActual.toLocaleString()}`);
+    console.log(`🔑 PIN correcto: ${PIN_CORRECTO}`);
+    console.log(`❌ Intentos fallidos: ${intentosFallidos}`);
+    console.log(`⚡ Sistema activo: ${sistemaActivo}`);
+    console.log("=================================");
+}
+
+// ===== INSTRUCCIONES PARA EL USUARIO =====
+console.log("🏧 CAJERO AUTOMÁTICO - INSTRUCCIONES");
+console.log("====================================");
+console.log("📝 Para comenzar, escriba: iniciarCajero()");
+console.log("🔄 Para reiniciar: reiniciarCajero()");
+console.log("📊 Para ver estado: mostrarEstadoSistema()");
+console.log("====================================");
+console.log("ℹ️  PIN de prueba: 1234");
+console.log("💰 Saldo inicial: $100,000");
+console.log("====================================");
+
+// ===== INICIO AUTOMÁTICO =====
+// Descomenta la siguiente línea para inicio automático:
+iniciarCajero();
